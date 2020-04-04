@@ -1,0 +1,85 @@
+## curl -sSL https://raw.githubusercontent.com/sorintlab/stolon/master/examples/kubernetes/stolon-keeper.yaml > stolon-keeper.yaml
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stolon-keeper
+spec:
+  serviceName: "stolon-keeper"
+  replicas: {{ stolon_keeper_replicas }}
+  selector:
+    matchLabels:
+      component: stolon-keeper
+      stolon-cluster: {{ stolon_cluster }}
+  template:
+    metadata:
+      labels:
+        component: stolon-keeper
+        stolon-cluster: {{ stolon_cluster }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: stolon-keeper
+          image: {{ stolon_image }}
+          command:
+            - "/bin/bash"
+            - "-ec"
+            - |
+              # Generate our keeper uid using the pod index
+              IFS='-' read -ra ADDR <<< "$(hostname)"
+              export STKEEPER_UID="keeper${ADDR[-1]}"
+              export POD_IP=$(hostname -i)
+              export STKEEPER_PG_LISTEN_ADDRESS=$POD_IP
+              export STOLON_DATA=/stolon-data
+              chown stolon:stolon $STOLON_DATA
+              exec gosu stolon stolon-keeper --data-dir $STOLON_DATA
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: STKEEPER_CLUSTER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['stolon-cluster']
+            - name: STKEEPER_STORE_BACKEND
+              value: "kubernetes"
+            - name: STKEEPER_KUBE_RESOURCE_KIND
+              value: "configmap"
+            - name: STKEEPER_PG_REPL_USERNAME
+              value: "repluser"
+            - name: STKEEPER_PG_REPL_PASSWORDFILE
+              value: "/etc/secrets/stolon/replpassword"
+            - name: STKEEPER_PG_SU_USERNAME
+              value: "stolon"
+            - name: STKEEPER_PG_SU_PASSWORDFILE
+              value: "/etc/secrets/stolon/password"
+            - name: STKEEPER_METRICS_LISTEN_ADDRESS
+              value: "0.0.0.0:8080"
+            - name: STKEEPER_DEBUG
+              value: "{{ stolon_stkeeper_debug }}"
+          ports:
+            - containerPort: 5432
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /stolon-data
+              name: data
+            - mountPath: /etc/secrets/stolon
+              name: stolon
+      volumes:
+        - name: stolon
+          secret:
+            secretName: stolon
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+        - "ReadWriteOnce"
+        storageClassName: {{ stolon_storage_class }}
+        resources:
+          requests:
+            storage: {{ stolon_storage_size }}

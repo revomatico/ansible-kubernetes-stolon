@@ -1,0 +1,17 @@
+- hosts: nodes
+  tasks:
+  - include_vars:
+      dir: kubernetes-stolon/defaults
+  - name: Create local directories on each node
+    file:
+      path: "{{ stolon_storage_local_path }}"
+      state: directory
+      recurse: yes
+      mode: "{{ stolon_storage_local_path_perm | default('0755') }}"
+      owner: "{{ stolon_storage_local_path_owner | default('0') }}"
+      group: "{{ stolon_storage_local_path_group | default('0') }}"
+
+
+- hosts: master
+  roles:
+  - kubernetes-stolon

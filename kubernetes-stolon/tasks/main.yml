@@ -1,0 +1,57 @@
+- name: Install ansible requirements
+  pip:
+    executable: pip3
+    extra_args: -U
+    name: "{{ item }}"
+  loop: "{{ lookup('file', 'requirements.txt').splitlines() }}"
+
+- name: "Create namespace - {{ stolon_namespace }}"
+  k8s:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ stolon_namespace }}"
+
+- name: Setup RBAC
+  k8s:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    definition: "{{ lookup('template', item + '.yaml.j2') | from_yaml }}"
+    namespace: "{{ stolon_namespace | default(omit) }}"
+    force: "{{ kubernetes_force | default(true) }}"
+  loop:
+  - role
+  - role-binding
+  when: stolon_rbac
+
+- name: Get Kubernetes nodes
+  k8s_facts:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    kind: 'Node'
+  register: kubernetes_nodes
+
+- name: Create persistent volumes
+  k8s:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    definition: "{{ lookup('template', 'stolon-keeper-pv.yaml.j2') | from_yaml }}"
+    namespace: "{{ stolon_namespace | default(omit) }}"
+    force: "{{ kubernetes_force | default(true) }}"
+  loop: "{{ kubernetes_nodes.resources }}"
+  loop_control:
+    loop_var: node
+    label: "{{ node.metadata.name }}"
+
+- name: Load kubernetes definitions
+  k8s:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    definition: "{{ lookup('template', item + '.yaml.j2') | from_yaml }}"
+    namespace: "{{ stolon_namespace | default(omit) }}"
+    force: "{{ kubernetes_force | default(false) }}"
+  loop:
+  - secret
+  - storage-class
+  - stolon-keeper
+  - stolon-proxy-service
+  - stolon-proxy
+  - stolon-sentinel

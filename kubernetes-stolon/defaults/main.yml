@@ -1,0 +1,18 @@
+stolon_namespace: stolon
+stolon_rbac: true
+
+stolon_cluster: kube-stolon
+
+stolon_keeper_replicas: 2
+stolon_proxy_replicas: 2
+stolon_sentinel_replicas: 2
+
+stolon_image: sorintlab/stolon:master-pg12
+
+stolon_stkeeper_debug: false
+stolon_stproxy_debug: false
+stolon_stsentinel_debug: false
+
+stolon_storage_class: local-storage
+stolon_storage_size: 1Gi
+stolon_storage_local_path: /stolon-local-data

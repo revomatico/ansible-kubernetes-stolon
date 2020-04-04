@@ -1,0 +1,13 @@
+## curl -sSL https://raw.githubusercontent.com/sorintlab/stolon/master/examples/kubernetes/stolon-proxy-service.yaml > stolon-proxy-service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stolon-proxy-service
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    component: stolon-proxy
+    stolon-cluster: {{ stolon_cluster }}
