@@ -4,7 +4,7 @@ metadata:
   name: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-keeper-{{ node.metadata.name }}
   labels:
     component: stolon-keeper
-    stolon-cluster: {{ stolon_cluster }}
+    stolon-cluster: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}{{ stolon_cluster }}
 spec:
   capacity:
     storage: {{ stolon_storage_size }}

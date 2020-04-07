@@ -10,8 +10,8 @@ spec:
     targetPort: 5432
   selector:
     component: stolon-proxy
-    stolon-cluster: {{ stolon_cluster }}
+    stolon-cluster: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}{{ stolon_cluster }}
 {% if stolon_proxy_service.externalIPs | default([]) | length  %}
   externalIPs:
-  {{ externalIPs | to_nice_yaml }}
+  {{ stolon_proxy_service.externalIPs | to_nice_yaml }}
 {% endif %}
