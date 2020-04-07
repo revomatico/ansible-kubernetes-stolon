@@ -3,17 +3,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stolon-proxy
+  name: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-proxy
 spec:
   replicas: {{ stolon_proxy_replicas }}
   selector:
     matchLabels:
-      component: stolon-proxy
+      component: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-proxy
       stolon-cluster: {{ stolon_cluster }}
   template:
     metadata:
       labels:
-        component: stolon-proxy
+        component: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-proxy
         stolon-cluster: {{ stolon_cluster }}
       annotations:
         prometheus.io/scrape: "true"

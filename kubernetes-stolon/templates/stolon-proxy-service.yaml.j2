@@ -3,11 +3,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: stolon-proxy-service
+  name: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-proxy-service
 spec:
   ports:
-    - port: 5432
-      targetPort: 5432
+  - port: {{ stolon_proxy_service.port | default(5432) }}
+    targetPort: 5432
   selector:
     component: stolon-proxy
     stolon-cluster: {{ stolon_cluster }}
+{% if stolon_proxy_service.externalIPs | default([]) | length  %}
+  externalIPs:
+  {{ externalIPs | to_nice_yaml }}
+{% endif %}

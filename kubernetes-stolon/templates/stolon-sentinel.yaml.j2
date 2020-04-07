@@ -3,17 +3,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stolon-sentinel
+  name: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-sentinel
 spec:
   replicas: {{ stolon_sentinel_replicas }}
   selector:
     matchLabels:
-      component: stolon-sentinel
+      component: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-sentinel
       stolon-cluster: {{ stolon_cluster }}
   template:
     metadata:
       labels:
-        component: stolon-sentinel
+        component: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-sentinel
         stolon-cluster: {{ stolon_cluster }}
       annotations:
         prometheus.io/scrape: "true"

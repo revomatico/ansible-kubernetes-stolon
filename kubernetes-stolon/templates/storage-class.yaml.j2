@@ -4,3 +4,4 @@ metadata:
   name: {{ stolon_storage_class }}
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: {{ stolon_storage_class_reclaim_policy | default('Retain') }}
