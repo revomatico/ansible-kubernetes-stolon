@@ -20,7 +20,9 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
         - set the playbook variable `kubeconfig_file_path` pointing to a local kueconfig
 
 ## Run
-`ANSIBLE_SSH_PIPELINING=true ANSIBLE_CONFIG=sample-ansible.cfg ansible-playbook sample-playbook.yml`
+```bash
+ANSIBLE_SSH_PIPELINING=true ANSIBLE_CONFIG=sample-ansible.cfg ansible-playbook sample-playbook.yml
+```
 
 ## Role parameters
 
@@ -34,21 +36,21 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
 | stolon_proxy_replicas               | 2                            | Number of proxy (deployment) replicas                                                                                           |
 | stolon_sentinel_replicas            | 2                            | Number of sentinel (deployment) replicas                                                                                        |
 | stolon_image                        | sorintlab/stolon:master-pg12 | Docker image for all stolon components                                                                                          |
-| stolon_secret_password              | undefined                    | Password for "stolon" user. If not specified, a 15 length random password will be generated. Must NOT be base64 encoded.        |
-| stolon_secret_replpassword          | undefined                    | Password for the replication user. If not specified, a 15 length random password will be generated. Must NOT be base64 encoded. |
-| ---                                 | ---                          | ---                                                                                                                             |
+| stolon_secret_password              | `undefined`                  | Password for `stolon` user. If not specified, a 15 length random password will be generated. Must NOT be base64 encoded.        |
+| stolon_secret_replpassword          | `undefined`                  | Password for the replication user. If not specified, a 15 length random password will be generated. Must NOT be base64 encoded. |
+| |
 | stolon_stkeeper_debug               | false                        | Enable debug for keeper                                                                                                         |
 | stolon_stproxy_debug                | false                        | Enable debug for proxy                                                                                                          |
 | stolon_stsentinel_debug             | false                        | Enable debug for sentinel                                                                                                       |
-| ---                                 | ---                          | ---                                                                                                                             |
+| |
 | stolon_storage_class                | stolon-local-storage         | Name of k8s storage class to be created/used                                                                                    |
-| stolon_storage_class_reclaim_policy | Retain                       | Reclaim policy, overriding k8s default of "Delete"                                                                              |
-| ---                                 | ---                          | ---                                                                                                                             |
+| stolon_storage_class_reclaim_policy | Retain                       | Reclaim policy, overriding k8s default of `Delete`                                                                              |
+| |
 | stolon_storage_size                 | 1Gi                          | Size of the local PersistentVolume                                                                                              |
 | stolon_storage_local_path           | /stolon-local-data           | Data directory. PostgreSQL data will be in `stolon_storage_local_path`/postgres                                                 |
-| ---                                 | ---                          | ---                                                                                                                             |
-| stolon_proxy_service.externalIPs    | undefined                    | Array of IPs for exposing proxy-service                                                                                         |
-| stolon_proxy_service.port           | undefined                    | External proxy port                                                                                                             |
-| ---                                 | ---                          | ---                                                                                                                             |
+| |
+| stolon_proxy_service.externalIPs    | `undefined`                  | Array of IPs for exposing proxy-service                                                                                         |
+| stolon_proxy_service.port           | `undefined`                  | External proxy port                                                                                                             |
+| |
 | stolonctl_retries                   | 5                            | Number of retries for the stolonctl task before giving up                                                                       |
 | stolonctl_delay                     | 15                           | Delay between each retry                                                                                                        |
