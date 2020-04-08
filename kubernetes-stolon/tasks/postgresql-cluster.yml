@@ -1,0 +1,40 @@
+- block:
+  - name: Get execution pod
+    shell:
+      kubectl -n {{ stolon_namespace }} \
+        get po \
+        -l stolon-cluster={{ stolon_cluster_label }},component=stolon-proxy \
+        -o name | tail -n1
+    register: ret
+
+  - set_fact:
+      _pod_name: "{{ ret.stdout }}"
+
+  - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
+    vars:
+      _stolonctl_name: "Check if the cluster '{{ stolon_cluster_label }}' exists"
+      _stolonctl_command: status
+      _stolonctl_ignore_errors: true
+
+  - set_fact:
+      _stolonctl_status: "{{ stolonctl_ret }}"
+
+  - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
+    vars:
+      _stolonctl_name: Init a new stolon cluster
+      _stolonctl_command: init -y
+    when: _stolonctl_status.stderr == '{}'
+
+  - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
+    vars:
+      _stolonctl_name: "Check the cluster '{{ stolon_cluster_label }}' status"
+      _stolonctl_command: status
+      _stolonctl_until: |
+        (stolonctl_ret.stdout | from_json).get('keepers', []) | selectattr('pg_healthy', 'equalto', true) | list | length == stolon_keeper_replicas
+    when: _stolonctl_status.stderr == '{}'
+
+#  - debug:
+#      msg: |
+#        {{ stolonctl_ret.stdout | from_json | to_nice_yaml }}
+
+  tags: data_clusters

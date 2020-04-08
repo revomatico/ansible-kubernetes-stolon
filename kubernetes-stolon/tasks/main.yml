@@ -14,6 +14,12 @@
       metadata:
         name: "{{ stolon_namespace }}"
 
+- set_fact:
+    stolon_cluster_label: "{% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}{{ stolon_cluster }}"
+  tags:
+  - all
+  - data_clusters
+
 - name: Setup RBAC
   k8s:
     kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
@@ -55,3 +61,7 @@
   - stolon-proxy-service
   - stolon-proxy
   - stolon-sentinel
+
+- name: Create PostgreSQL data cluster
+  include_tasks: kubernetes-stolon/tasks/postgresql-cluster.yml
+  tags: data_clusters

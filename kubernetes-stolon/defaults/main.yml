@@ -14,7 +14,7 @@ stolon_stkeeper_debug: false
 stolon_stproxy_debug: false
 stolon_stsentinel_debug: false
 
-stolon_storage_class: local-storage
+stolon_storage_class: stolon-local-storage
 stolon_storage_class_reclaim_policy: Retain
 
 stolon_storage_size: 1Gi

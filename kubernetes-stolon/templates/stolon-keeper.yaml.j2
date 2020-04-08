@@ -3,19 +3,19 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-keeper
+  name: {% if stolon_release | default('', true) %}{{ stolon_release }}-{% endif %}stolon-keeper
 spec:
-  serviceName: "{% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon-keeper"
+  serviceName: "{% if stolon_release | default('', true) %}{{ stolon_release }}-{% endif %}stolon-keeper"
   replicas: {{ stolon_keeper_replicas }}
   selector:
     matchLabels:
       component: stolon-keeper
-      stolon-cluster: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}{{ stolon_cluster }}
+      stolon-cluster: {{ stolon_cluster_label }}
   template:
     metadata:
       labels:
         component: stolon-keeper
-        stolon-cluster: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}{{ stolon_cluster }}
+        stolon-cluster: {{ stolon_cluster_label }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
@@ -72,7 +72,7 @@ spec:
       volumes:
         - name: stolon
           secret:
-            secretName: {% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}stolon
+            secretName: {% if stolon_release | default('', true) %}{{ stolon_release }}-{% endif %}stolon
   volumeClaimTemplates:
     - metadata:
         name: data
