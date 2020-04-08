@@ -8,8 +8,8 @@
       state: directory
       recurse: yes
       mode: "{{ stolon_storage_local_path_perm | default('0755') }}"
-      owner: "{{ stolon_storage_local_path_owner | default('0') }}"
-      group: "{{ stolon_storage_local_path_group | default('0') }}"
+      owner: "{{ stolon_storage_local_path_owner | default('1000') }}"
+      group: "{{ stolon_storage_local_path_group | default('1000') }}"
 
 
 - hosts: master
