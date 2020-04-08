@@ -19,3 +19,5 @@ stolon_storage_class_reclaim_policy: Retain
 
 stolon_storage_size: 1Gi
 stolon_storage_local_path: /stolon-local-data
+
+stolon_proxy_service:

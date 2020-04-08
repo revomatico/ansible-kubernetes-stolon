@@ -8,8 +8,8 @@
         -f json \
         {{ _stolonctl_command }}
   register: stolonctl_ret
-  retries: "{{ stolonctl_retries | default(3) }}"
-  delay: "{{ stolonctl_delay | default(5) }}"
+  retries: "{{ stolonctl_retries | default(5) }}"
+  delay: "{{ stolonctl_delay | default(15) }}"
   until: "{{ _stolonctl_until | default(true) }}"
   ignore_errors: "{{ _stolonctl_ignore_errors | default(false) }}"
   tags: data_clusters
