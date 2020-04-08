@@ -28,6 +28,7 @@ ANSIBLE_SSH_PIPELINING=true ANSIBLE_CONFIG=sample-ansible.cfg ansible-playbook s
 
 | Parameter                           | Default Value                | Description                                                                                                                     |
 |-------------------------------------|------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| kubeconfig_file_path                | `undefined`                  | Optional path to kubeconfig file containing cluster, user and context. The one in a default location will be used if empty.     |
 | stolon_namespace                    | stolon                       | Kubernetes namespace                                                                                                            |
 | stolon_release                      | ''                           | Optional prefix for stolon objetcs                                                                                              |
 | stolon_rbac                         | true                         | Enable RBAC                                                                                                                     |
