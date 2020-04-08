@@ -13,5 +13,5 @@ spec:
     stolon-cluster: {{ stolon_cluster_label }}
 {% if stolon_proxy_service.externalIPs | default([]) | length  %}
   externalIPs:
-  {{ stolon_proxy_service.externalIPs | to_nice_yaml }}
+  {{ stolon_proxy_service.externalIPs | to_nice_yaml | indent(2, indentfirst=false) -}}
 {% endif %}

@@ -2,13 +2,13 @@
   - name: Get execution pod
     shell:
       kubectl -n {{ stolon_namespace }} \
-        get po \
+        get pod \
         -l stolon-cluster={{ stolon_cluster_label }},component=stolon-proxy \
         -o name | tail -n1
     register: ret
 
   - set_fact:
-      _pod_name: "{{ ret.stdout }}"
+      _pod_name: "{{ ret.stdout | default('') }}"
 
   - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
     vars:
@@ -23,7 +23,7 @@
     vars:
       _stolonctl_name: Init a new stolon cluster
       _stolonctl_command: init -y
-    when: _stolonctl_status.stderr == '{}'
+    when: _stolonctl_status.stderr | default('') == '{}'
 
   - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
     vars:
@@ -31,7 +31,7 @@
       _stolonctl_command: status
       _stolonctl_until: |
         (stolonctl_ret.stdout | from_json).get('keepers', []) | selectattr('pg_healthy', 'equalto', true) | list | length == stolon_keeper_replicas
-    when: _stolonctl_status.stderr == '{}'
+    when: _stolonctl_status.stderr | default('') == '{}'
 
 #  - debug:
 #      msg: |

@@ -6,12 +6,13 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
 
 ## Prerequisites
 1. Python3 and pip3
-2. Mitogen is higly recommended:
-  - download: `mkdir -p plugins && cd plugins && git clone https://github.com/dw/mitogen.git`
-  - set in **sample-absible.cfg**:
+2. Developed and tested with ansible 2.8
+3. Mitogen is higly recommended:
+  - Download: `mkdir -p plugins && cd plugins && git clone https://github.com/dw/mitogen.git`
+  - Set in **sample-absible.cfg**:
     - `strategy_plugins = plugins/mitogen/ansible_mitogen/plugins/strategy`
     - `strategy = mitogen_linear`
-3. Setup ansible inventory:
+4. Setup ansible inventory:
     - To run remotely:
         - Set your ansible_host in `inventory/host_vars/master` to point to your kubernetes master
         - Set up your ssh key for authentication to the master
