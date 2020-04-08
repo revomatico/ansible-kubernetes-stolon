@@ -50,7 +50,7 @@ ANSIBLE_SSH_PIPELINING=true ANSIBLE_CONFIG=sample-ansible.cfg ansible-playbook s
 | stolon_storage_local_path           | /stolon-local-data           | Data directory. PostgreSQL data will be in `stolon_storage_local_path`/postgres                                                 |
 | |
 | stolon_proxy_service.externalIPs    | `undefined`                  | Array of IPs for exposing proxy-service                                                                                         |
-| stolon_proxy_service.port           | `undefined`                  | External proxy port                                                                                                             |
+| stolon_proxy_service.port           | 5432                         | External proxy port                                                                                                             |
 | |
 | stolonctl_retries                   | 5                            | Number of retries for the stolonctl task before giving up                                                                       |
 | stolonctl_delay                     | 15                           | Delay between each retry                                                                                                        |
