@@ -33,6 +33,9 @@ ansible-playbook sample-playbook.yml \
 | Parameter                           | Default Value                | Description                                                                                                                      |
 |-------------------------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | kubeconfig_file_path                | `undefined`                  | Optional path to kubeconfig file containing k8s cluster, user and context. The one in a default location will be used if empty   |
+| kubernetes_retries                  | 10                           | Creating k8s objects: Maximum number of retries before giving up in error and drama                                              |
+| kubernetes_delay                    | 15                           | Creating k8s objects: Delay between retries                                                                                      |
+| kubernetes_force                    | false                        | Creating k8s objects: Replace the existing object instead of updating it                                                         |
 | stolon_namespace                    | stolon                       | Kubernetes namespace                                                                                                             |
 | stolon_release                      | ''                           | Optional prefix for stolon objetcs                                                                                               |
 | stolon_rbac                         | true                         | Enable RBAC                                                                                                                      |
@@ -57,5 +60,5 @@ ansible-playbook sample-playbook.yml \
 | stolon_proxy_service.externalIPs    | `undefined`                  | Array of IPs for exposing proxy-service                                                                                          |
 | stolon_proxy_service.port           | 5432                         | External proxy port                                                                                                              |
 | |
-| stolonctl_retries                   | 5                            | Number of retries for the stolonctl task before giving up                                                                        |
+| stolonctl_retries                   | 10                           | Number of retries for the stolonctl task before giving up. Increase this if hardware is slower                                   |
 | stolonctl_delay                     | 15                           | Delay between each retry                                                                                                         |

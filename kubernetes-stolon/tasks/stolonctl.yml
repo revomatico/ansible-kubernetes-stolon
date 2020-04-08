@@ -5,10 +5,9 @@
         --cluster-name={{ stolon_cluster_label }} \
         --store-backend=kubernetes \
         --kube-resource-kind=configmap \
-        -f json \
         {{ _stolonctl_command }}
   register: stolonctl_ret
-  retries: "{{ stolonctl_retries | default(5) }}"
+  retries: "{{ stolonctl_retries | default(10) }}"
   delay: "{{ stolonctl_delay | default(15) }}"
   until: "{{ _stolonctl_until | default(true) }}"
   ignore_errors: "{{ _stolonctl_ignore_errors | default(false) }}"

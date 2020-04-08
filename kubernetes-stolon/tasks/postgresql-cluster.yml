@@ -13,7 +13,7 @@
   - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
     vars:
       _stolonctl_name: "Check if the cluster '{{ stolon_cluster_label }}' exists"
-      _stolonctl_command: status
+      _stolonctl_command: -f json status
       _stolonctl_ignore_errors: true
 
   - set_fact:
@@ -23,18 +23,18 @@
     vars:
       _stolonctl_name: Init a new stolon cluster
       _stolonctl_command: init -y
-    when: _stolonctl_status.stderr | default('') == '{}'
+    when: _stolonctl_status.stdout | default('') == '{}'
 
   - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
     vars:
       _stolonctl_name: "Check the cluster '{{ stolon_cluster_label }}' status"
-      _stolonctl_command: status
+      _stolonctl_command: -f json status
       _stolonctl_until: |
         (stolonctl_ret.stdout | from_json).get('keepers', []) | selectattr('pg_healthy', 'equalto', true) | list | length == stolon_keeper_replicas
-    when: _stolonctl_status.stderr | default('') == '{}'
+    when: _stolonctl_status.stdout | default('') == '{}'
 
-#  - debug:
-#      msg: |
-#        {{ stolonctl_ret.stdout | from_json | to_nice_yaml }}
+  - debug:
+      msg: |
+        {{ stolonctl_ret.stdout | from_json | to_nice_yaml }}
 
   tags: data_clusters

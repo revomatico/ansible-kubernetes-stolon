@@ -54,6 +54,22 @@
     definition: "{{ lookup('template', item + '.yaml.j2') | from_yaml }}"
     namespace: "{{ stolon_namespace | default(omit) }}"
     force: "{{ kubernetes_force | default(false) }}"
+  register: ret
+  retries: "{{ kubernetes_retries | default(10) }}"
+  delay: "{{ kubernetes_delay | default(15) }}"
+  until: |
+    ret.get('status', 200) != 200
+    or (
+      ret.get('result', {}).get('kind') in ['Deployment', 'StatefulSet']
+      and
+        ret.get('result', {})
+           .get('status', {})
+           .get('readyReplicas', -1)
+        == ret.get('result', {})
+              .get('status', {})
+              .get('replicas')
+    )
+    or ret.get('result', {}).get('kind') not in ['Deployment', 'StatefulSet']
   loop:
   - secret
   - storage-class
