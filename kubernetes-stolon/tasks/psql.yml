@@ -1,7 +1,7 @@
 - name: "{{ _psql_name }}"
   shell: |
     kubectl -n {{ stolon_namespace }} exec -i {{ _pod_name }} -- \
-      psql -v ON_ERROR_STOP=1 \
+      psql -v ON_ERROR_STOP=0 \
         --username stolon \
         --dbname postgres \
         --host localhost \

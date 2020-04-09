@@ -91,4 +91,5 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
     - |
       CREATE ROLE "myrole" NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN PASSWORD 'mypass';
       CREATE SCHEMA "myschema" AUTHORIZATION "myrole";
+      GRANT ALL PRIVILEGES ON SCHEMA "myschema" TO "myrole";
     ```
