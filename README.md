@@ -4,6 +4,7 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
 
 > Based on [sorintlab/stolon/examples/kubernetes](https://github.com/sorintlab/stolon/tree/master/examples/kubernetes).
 
+
 ## Prerequisites
 1. Python3 and pip3
 2. Developed and tested with ansible 2.8
@@ -20,13 +21,20 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
         - in `inventory/host_vars/master`, uncomment: `ansible_connection: local`
         - set the playbook variable `kubeconfig_file_path` pointing to a local kubeconfig
 
+
 ## Run
-```bash
-ANSIBLE_SSH_PIPELINING=true \
-ANSIBLE_CONFIG=sample-ansible.cfg \
-ansible-playbook sample-playbook.yml \
-    --extra-vars "@params-override.yml"
-```
+- Full playbook:
+
+    ```bash
+    ANSIBLE_SSH_PIPELINING=true \
+    ANSIBLE_CONFIG=sample-ansible.cfg \
+    ansible-playbook sample-playbook.yml \
+        --extra-vars "@params-override.yml -v"
+    ```
+
+- Just database creation: add `--tags data_clusters`
+- Just SQL scripts: add `--tags execute_sql`
+
 
 ## Role parameters
 
@@ -65,3 +73,22 @@ ansible-playbook sample-playbook.yml \
 | stolonctl_delay                     | 15                           | Delay in seconds between each retry                                                                                              |
 | |
 | postgresql_scripts                  | []                           | List of SQL statements to run after database creation (e.g. DDL to create schemas, etc)                                          |
+
+
+## Samples
+> The following can be set in a vars file, e.g. `params-override.yml`
+
+1. External IPs for the proxy service:
+    ```yaml
+    stolon_proxy_service:
+      externalIPs:
+      - 10.11.12.13
+    ```
+
+2. SQl Scripts:
+    ```yaml
+    postgresql_scripts:
+    - |
+      CREATE ROLE "myrole" NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN PASSWORD 'mypass';
+      CREATE SCHEMA "myschema" AUTHORIZATION "myrole";
+    ```
