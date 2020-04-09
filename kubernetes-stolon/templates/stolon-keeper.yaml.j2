@@ -72,7 +72,7 @@ spec:
       volumes:
         - name: stolon
           secret:
-            secretName: {% if stolon_release | default('', true) %}{{ stolon_release }}-{% endif %}stolon
+            secretName: {{ stolon_secret_name }}
   volumeClaimTemplates:
     - metadata:
         name: data

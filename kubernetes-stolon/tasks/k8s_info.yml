@@ -1,0 +1,11 @@
+- name: "Query k8s - {{ _k8s_info.name }}"
+  k8s_info:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    context: "{{ _k8s_info.context | default(omit) }}"
+    namespace: "{{ _k8s_info.namespace | default(stolon_namespace) | default(omit) }}"
+    api_version: "{{ _k8s_info.api_version | default(omit) }}"
+    kind: "{{ _k8s_info.kind | default(omit) }}"
+    name: "{{ _k8s_info.name | default(omit) }}"
+    field_selectors: "{{ _k8s_info.field_selectors | default(omit) }}"
+    label_selectors: "{{ _k8s_info.label_selectors | default(omit) }}"
+  register: k8s_info_ret

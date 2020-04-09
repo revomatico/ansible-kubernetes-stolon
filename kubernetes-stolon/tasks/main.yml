@@ -16,9 +16,11 @@
 
 - set_fact:
     stolon_cluster_label: "{% if stolon_release | default('') %}{{ stolon_release }}-{% endif %}{{ stolon_cluster }}"
+    stolon_secret_name: "{% if stolon_release | default('', true) %}{{ stolon_release }}-{% endif %}stolon"
   tags:
   - all
   - data_clusters
+  - execute_sql
 
 - name: Setup RBAC
   k8s:
@@ -26,34 +28,77 @@
     definition: "{{ lookup('template', item + '.yaml.j2') | from_yaml }}"
     namespace: "{{ stolon_namespace | default(omit) }}"
     force: "{{ kubernetes_force | default(true) }}"
+    state: "{{ kubernetes_state | default(omit) }}"
   loop:
   - role
   - role-binding
   when: stolon_rbac
 
 - name: Get Kubernetes nodes
+  include_tasks: kubernetes-stolon/tasks/k8s_info.yml
+  vars:
+    _k8s_info:
+      kind: 'Node'
+  when: ansible_version.full is version_compare('2.9', '>=')
+
+- name: Get Kubernetes nodes
   k8s_facts:
     kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
     kind: 'Node'
-  register: kubernetes_nodes
+  register: k8s_info_ret
+  when: ansible_version.full is version_compare('2.9', '<')
 
-- name: Create persistent volumes
+- name: Process persistent volumes
   k8s:
     kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
     definition: "{{ lookup('template', 'stolon-keeper-pv.yaml.j2') | from_yaml }}"
     namespace: "{{ stolon_namespace | default(omit) }}"
     force: "{{ kubernetes_force | default(true) }}"
-  loop: "{{ kubernetes_nodes.resources }}"
+    state: "{{ kubernetes_state | default(omit) }}"
+  loop: "{{ k8s_info_ret.resources }}"
   loop_control:
     loop_var: node
     label: "{{ node.metadata.name }}"
 
-- name: Load kubernetes definitions
+- name: Check stolon secret
+  include_tasks: kubernetes-stolon/tasks/k8s_info.yml
+  vars:
+    _k8s_info:
+      namespace: "{{ stolon_namespace | default(omit) }}"
+      api_version: v1
+      kind: Secret
+      name: "{{ stolon_secret_name }}"
+  when: ansible_version.full is version_compare('2.9', '>=')
+
+- name: Check stolon secret
+  k8s_facts:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    namespace: "{{ stolon_namespace | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    name: "{{ stolon_secret_name }}"
+  register: k8s_info_ret
+  when: ansible_version.full is version_compare('2.9', '<')
+
+- name: Process stolon secret
+  k8s:
+    kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
+    namespace: "{{ stolon_namespace | default(omit) }}"
+    definition: "{{ lookup('template', 'secret.yaml.j2') | from_yaml }}"
+    force: "{{ kubernetes_force | default(false) }}"
+    state: "{{ kubernetes_state | default(omit) }}"
+  when:
+    (kubernetes_state != 'absent' and k8s_info_ret.resources | length == 0)
+    or
+    (kubernetes_state == 'absent' and k8s_info_ret.resources | length)
+
+- name: Process all other kubernetes artefacts
   k8s:
     kubeconfig: "{{ kubeconfig_file_path | default(omit) }}"
     definition: "{{ lookup('template', item + '.yaml.j2') | from_yaml }}"
     namespace: "{{ stolon_namespace | default(omit) }}"
     force: "{{ kubernetes_force | default(false) }}"
+    state: "{{ kubernetes_state | default(omit) }}"
   register: ret
   retries: "{{ kubernetes_retries | default(10) }}"
   delay: "{{ kubernetes_delay | default(15) }}"
@@ -71,13 +116,45 @@
     )
     or ret.get('result', {}).get('kind') not in ['Deployment', 'StatefulSet']
   loop:
-  - secret
   - storage-class
   - stolon-keeper
   - stolon-proxy-service
   - stolon-proxy
   - stolon-sentinel
 
+- name: Delete generated objects
+  shell:
+    kubectl -n {{ stolon_namespace }} delete ConfigMap stolon-cluster-{{ stolon_cluster_label }};
+    kubectl -n {{ stolon_namespace }} delete PersistentVolumeClaim -l component=stolon-keeper,stolon-cluster={{ stolon_cluster_label }}
+  when: kubernetes_state == 'absent'
+
+- meta: end_play
+  when: kubernetes_state == 'absent'
+
+- block:
+  - name: Get execution pod
+    shell:
+      kubectl -n {{ stolon_namespace }} \
+        get pod \
+        -l stolon-cluster={{ stolon_cluster_label }},component=stolon-proxy \
+        -o name | tail -n1
+    register: ret
+  - set_fact:
+      _pod_name: "{{ ret.stdout | default('') }}"
+  tags:
+  - data_clusters
+  - execute_sql
+
 - name: Create PostgreSQL data cluster
   include_tasks: kubernetes-stolon/tasks/postgresql-cluster.yml
   tags: data_clusters
+
+- vars:
+    _psql_name: Execute SQL Script
+    _psql_ignore_errors: true
+  include_tasks: kubernetes-stolon/tasks/psql.yml
+  loop: "{{ postgresql_scripts }}"
+  loop_control:
+    loop_var: _psql_script
+  when: postgresql_scripts | default([]) | length
+  tags: execute_sql

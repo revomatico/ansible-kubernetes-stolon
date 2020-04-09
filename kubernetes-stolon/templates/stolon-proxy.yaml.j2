@@ -46,6 +46,12 @@ spec:
               value: "0.0.0.0:8080"
             - name: STPROXY_DEBUG
               value: "{{ stolon_stproxy_debug }}"
+            ## Set this env for running psql cli
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ stolon_secret_name }}
+                  key: password
           ports:
             - containerPort: 5432
             - containerPort: 8080

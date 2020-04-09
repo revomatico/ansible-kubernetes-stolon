@@ -1,15 +1,4 @@
 - block:
-  - name: Get execution pod
-    shell:
-      kubectl -n {{ stolon_namespace }} \
-        get pod \
-        -l stolon-cluster={{ stolon_cluster_label }},component=stolon-proxy \
-        -o name | tail -n1
-    register: ret
-
-  - set_fact:
-      _pod_name: "{{ ret.stdout | default('') }}"
-
   - include_tasks: kubernetes-stolon/tasks/stolonctl.yml
     vars:
       _stolonctl_name: "Check if the cluster '{{ stolon_cluster_label }}' exists"

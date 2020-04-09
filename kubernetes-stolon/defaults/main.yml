@@ -1,3 +1,5 @@
+kubernetes_state: 'present'
+
 stolon_namespace: stolon
 stolon_release: ''
 stolon_rbac: true
@@ -21,3 +23,5 @@ stolon_storage_size: 1Gi
 stolon_storage_local_path: /stolon-local-data
 
 stolon_proxy_service:
+
+postgresql_scripts: []

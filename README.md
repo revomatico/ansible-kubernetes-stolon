@@ -33,9 +33,10 @@ ansible-playbook sample-playbook.yml \
 | Parameter                           | Default Value                | Description                                                                                                                      |
 |-------------------------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | kubeconfig_file_path                | `undefined`                  | Optional path to kubeconfig file containing k8s cluster, user and context. The one in a default location will be used if empty   |
-| kubernetes_retries                  | 10                           | Creating k8s objects: Maximum number of retries before giving up in error and drama                                              |
-| kubernetes_delay                    | 15                           | Creating k8s objects: Delay between retries                                                                                      |
-| kubernetes_force                    | false                        | Creating k8s objects: Replace the existing object instead of updating it                                                         |
+| kubernetes_retries                  | 10                           | k8s objects: Maximum number of retries before giving up in error and drama                                                       |
+| kubernetes_delay                    | 15                           | k8s objects: Delay in seconds between retries                                                                                    |
+| kubernetes_force                    | false                        | k8s objects: Replace the existing object instead of updating it                                                                  |
+| kubernetes_state                    | `undefined`                  | k8s objects: If set to 'absent' will delete all stolon k8s objects, but the data should be left intact                           |
 | stolon_namespace                    | stolon                       | Kubernetes namespace                                                                                                             |
 | stolon_release                      | ''                           | Optional prefix for stolon objetcs                                                                                               |
 | stolon_rbac                         | true                         | Enable RBAC                                                                                                                      |
@@ -61,4 +62,6 @@ ansible-playbook sample-playbook.yml \
 | stolon_proxy_service.port           | 5432                         | External proxy port                                                                                                              |
 | |
 | stolonctl_retries                   | 10                           | Number of retries for the stolonctl task before giving up. Increase this if hardware is slower                                   |
-| stolonctl_delay                     | 15                           | Delay between each retry                                                                                                         |
+| stolonctl_delay                     | 15                           | Delay in seconds between each retry                                                                                              |
+| |
+| postgresql_scripts                  | []                           | List of SQL statements to run after database creation (e.g. DDL to create schemas, etc)                                          |
