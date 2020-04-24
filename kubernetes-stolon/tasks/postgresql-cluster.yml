@@ -22,6 +22,10 @@
         (stolonctl_ret.stdout | from_json).get('keepers', []) | selectattr('pg_healthy', 'equalto', true) | list | length == stolon_keeper_replicas
     when: _stolonctl_status.stdout | default('') == '{}'
 
+  - name: Wait after the cluster initialization
+    wait_for:
+      timeout: 10
+
   - debug:
       msg: |
         {{ stolonctl_ret.stdout | from_json | to_nice_yaml }}
