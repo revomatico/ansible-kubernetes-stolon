@@ -33,6 +33,7 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
     ```
 
 - Just database creation: add `--tags data_clusters`
+- Just simple schema creation: add `--tags create_schemas`
 - Just SQL scripts: add `--tags execute_sql`
 
 
