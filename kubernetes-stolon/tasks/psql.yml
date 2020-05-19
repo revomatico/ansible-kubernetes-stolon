@@ -10,4 +10,4 @@
     !
   register: psql_ret
   ignore_errors: "{{ _psql_ignore_errors | default(false) }}"
-  tags: execute_sql
+  tags: always

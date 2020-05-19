@@ -72,6 +72,7 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
 | stolonctl_retries                   | 10                           | Number of retries for the stolonctl task before giving up. Increase this if hardware is slower                                   |
 | stolonctl_delay                     | 15                           | Delay in seconds between each retry                                                                                              |
 | |
+| postgresql_schemas                  | []                           | List of objects to create roles with login and password and schemas                                                              |
 | postgresql_scripts                  | []                           | List of SQL statements to run after database creation (e.g. DDL to create schemas, etc)                                          |
 
 
@@ -85,11 +86,21 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
       - 10.11.12.13
     ```
 
-2. SQl Scripts:
+2. Create roles and schemas for applications
+    ```yaml
+    ## Automatically create schemas and roles (accounts) to login to the schemas for various apps
+    postgresql_schemas:
+    ## Create a schema keycloak, and set role and password the same:
+    - name: "keycloak"
+    ## Create a schema with a different role and password
+    - name: "myschema"
+      role: "myrole"
+      password: "mypassword"
+    ```
+
+3. SQl Scripts:
     ```yaml
     postgresql_scripts:
     - |
-      CREATE ROLE "myrole" NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN PASSWORD 'mypass';
-      CREATE SCHEMA "myschema" AUTHORIZATION "myrole";
-      GRANT ALL PRIVILEGES ON SCHEMA "myschema" TO "myrole";
+      SOME OTHER SQL SCRIPT HERE;
     ```

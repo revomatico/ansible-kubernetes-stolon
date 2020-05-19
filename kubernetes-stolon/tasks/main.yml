@@ -20,6 +20,7 @@
   tags:
   - all
   - data_clusters
+  - create_schemas
   - execute_sql
 
 - name: Setup RBAC
@@ -143,11 +144,28 @@
       _pod_name: "{{ ret.stdout | default('') }}"
   tags:
   - data_clusters
+  - create_schemas
   - execute_sql
 
 - name: Create PostgreSQL data cluster
   include_tasks: kubernetes-stolon/tasks/postgresql-cluster.yml
   tags: data_clusters
+
+- vars:
+    _psql_name: Create schemas
+    _psql_ignore_errors: true
+    _psql_script: |
+      CREATE ROLE "{{ _psql_schema.role | default(_psql_schema.name) }}" NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN PASSWORD '{{ _psql_schema.password | default(_psql_schema.name) }}';
+      CREATE SCHEMA "{{ _psql_schema.name }}" AUTHORIZATION "{{ _psql_schema.role | default(_psql_schema.name) }}";
+      GRANT ALL PRIVILEGES ON SCHEMA "{{ _psql_schema.name }}" TO "{{ _psql_schema.role | default(_psql_schema.name) }}";
+      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "{{ _psql_schema.name }}" TO "{{ _psql_schema.role | default(_psql_schema.name) }}";
+      GRANT USAGE ON ALL SEQUENCES IN SCHEMA "{{ _psql_schema.name }}" TO "{{ _psql_schema.role | default(_psql_schema.name) }}";
+  include_tasks: kubernetes-stolon/tasks/psql.yml
+  loop: "{{ postgresql_schemas }}"
+  loop_control:
+    loop_var: _psql_schema
+  when: postgresql_schemas | default([]) | length
+  tags: create_schemas
 
 - vars:
     _psql_name: Execute SQL Script
