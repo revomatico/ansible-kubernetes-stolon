@@ -17,7 +17,7 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
     - To run remotely:
         - Set your ansible_host in `inventory/host_vars/master` to point to your kubernetes master
         - Set up your ssh key for authentication to the master
-    - To run run locally:
+    - To run locally:
         - in `inventory/host_vars/master`, uncomment: `ansible_connection: local`
         - set the playbook variable `kubeconfig_file_path` pointing to a local kubeconfig
 
@@ -29,6 +29,7 @@ Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes clus
     ANSIBLE_SSH_PIPELINING=true \
     ANSIBLE_CONFIG=sample-ansible.cfg \
     ansible-playbook sample-playbook.yml \
+        --inventory sample-inventory \
         --extra-vars "@params-override.yml -v"
     ```
 
