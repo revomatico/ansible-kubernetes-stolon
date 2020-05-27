@@ -29,5 +29,6 @@
   - debug:
       msg: |
         {{ stolonctl_ret.stdout | from_json | to_nice_yaml }}
+    when: stolonctl_ret.rc == 0
 
   tags: data_clusters
