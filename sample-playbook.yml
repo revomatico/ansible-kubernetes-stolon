@@ -15,3 +15,7 @@
 - hosts: master
   roles:
   - kubernetes-stolon
+  tags:
+  - data_clusters
+  - create_schemas
+  - execute_sql
