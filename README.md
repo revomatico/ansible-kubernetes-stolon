@@ -1,5 +1,7 @@
 # ansible-kubernetes-stolon
 
+> DEPRECATED! This is because stolong project is no longer maintained by the owners. Switched to CrunchyData PGO instead.
+
 Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes cluster.
 
 > Based on [sorintlab/stolon/examples/kubernetes](https://github.com/sorintlab/stolon/tree/master/examples/kubernetes).
