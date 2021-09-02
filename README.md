@@ -1,6 +1,6 @@
 # ansible-kubernetes-stolon
 
-> DEPRECATED! This is because stolong project is no longer maintained by the owners. Switched to CrunchyData PGO instead.
+> DEPRECATED! This is because stolon project is no longer maintained by the owners. Switched to CrunchyData PGO instead.
 
 Ansible role and sample playbook to deploy sorintlab/stolon on a Kubernetes cluster.
 
